@@ -1,0 +1,333 @@
+OKCUP R2 Practice Script
+
+Barad-dur Router 1 config:
+enable secret C1sc0R0cks
+hostname Barad-durR1
+int g0/0
+ip add 89.41.183.2 255.255.255.252
+no shut
+int g0/1
+no shut
+ip add 192.168.221.1 255.255.255.0
+int g0/2
+ip add 169.225.59.6 255.255.255.252
+no shut
+router ospf 1
+network 89.41.183.2 0.0.0.0 area 0
+network 192.168.221.1 0.0.0.0 area 0
+network 169.225.59.6 0.0.0.0 area 0
+int g0/0
+ip ospf cost 10
+int g0/2
+ip ospf cost 30
+
+Mordor Layer 3 Switch 1 Config:
+enable secret C1sc0R0cks
+hostname MordorL3S1
+service password-encryption
+int g1/0/1
+no switchport
+ip address 20.98.145.2 255.255.255.252
+no shut
+int g1/0/2
+no switchport
+ip address 1.73.241.6 255.255.255.252
+no shut
+int g1/0/3
+no switchport
+ip address 9.63.216.17 255.255.255.252
+no shut
+int vlan 1
+ip address 10.115.140.1 255.255.255.0
+no shut
+vlan 100
+int vlan 100
+ip address 10.179.145.1 255.255.255.0
+no shut
+vlan 200
+int vlan 200
+ip address 172.30.253.1 255.255.255.0
+no shut
+int g1/0/4
+switchport mode trunk
+switchport trunk allowed vlan 1,100,200
+exit
+ip routing
+router ospf 1
+network 20.98.145.2 0.0.0.0 area 0
+network 1.73.241.6 0.0.0.0 area 0
+network 9.63.216.17 0.0.0.0 area 0
+network 10.115.140.1 0.0.0.0 area 0
+network 10.179.145.1 0.0.0.0 area 0
+network 172.30.253.1 0.0.0.0 area 0
+int g1/0/1
+ip ospf cost 10
+int g1/0/2
+ip ospf cost 30
+
+Gondor Layer 3 Switch 2:
+enable secret C1sc0R0cks
+hostname GondorL3S2
+service password-encryption
+ip routing
+int g1/0/1
+no switchport
+ip address 4.186.123.2 255.255.255.0
+no shut
+int g1/0/2
+no switchport
+ip address 104.101.125.5 255.255.255.252
+no shut
+int g1/0/3
+no switchport
+ip address 7.249.141.5 255.255.255.252
+no shut
+int g1/0/10
+no switchport
+ip address 169.225.59.5 255.255.255.252
+no shut
+int g1/0/24
+no switchport
+ip address 174.2.164.2 255.255.255.252
+no shut
+int g1/0/23
+no switchport
+ip address 1.73.241.5 255.255.255.252
+no shut
+int g1/0/22
+no switchport
+ip address 136.174.243.13 255.255.255.252
+no shut
+exit
+ip route 0.0.0.0 0.0.0.0 174.2.164.1
+ip route 0.0.0.0 0.0.0.0 4.186.123.1 254
+int g1/0/2
+ip ospf 1 area 0
+int g1/0/3
+ip ospf 1 area 0
+int g1/0/10
+ip ospf 1 area 0
+int g1/0/23
+ip ospf 1 area 0
+int g1/0/22
+ip ospf 1 area 0
+router ospf 1
+default-information originate
+
+Mordor Switch 2 Config:
+enable secret C1sc0R0cks
+service password-encryption
+hostname MordorS2
+int vlan 1
+ip address 10.115.140.4 255.255.255.0
+no shut
+no desc
+exit
+ip default-gateway 10.115.140.1
+int fa0/2
+no desc
+switchport mode access
+switchport access vlan 200
+int fa0/3
+no desc
+switchport mode access
+switchport access vlan 100
+int range g0/1-2
+no desc
+switchport mode trunk
+switchport trunk allowed vlan 1,100,200
+int fa0/1
+switchport mode access
+shutdown
+
+Numenor Switch 1
+enable secret C1sc0R0cks
+hostname NumenorS1
+vlan 2
+int g0/1
+no desc
+switchport mode trunk
+switchport trunk allowed vlan 1-1005
+int fa0/2
+no desc
+switchport mode access
+switchport access vlan 2
+
+Gondor Layer 3 Switch 1
+enable secret C1sc0R0cks
+hostname GondorL3S1
+ip routing
+int g1/0/1
+no switchport
+ip add 15.49.154.2 255.255.255.0
+no shut
+int g1/0/2
+no switchport
+ip add 3.144.167.1 255.255.255.252
+no shut
+int g1/0/3
+no switchport
+ip add 83.78.26.1 255.255.255.252
+no shut
+int g1/0/10
+no switchport
+ip add 89.41.183.1 255.255.255.252
+no shut
+int g1/0/24
+no switchport
+ip add 174.2.164.1 255.255.255.252
+no shut
+int g1/0/23
+no switchport
+ip add 20.98.145.1 255.255.255.252
+no shut
+int g1/0/22
+no switchport
+ip add 155.26.71.9 255.255.255.252
+no shut
+exit
+ip route 0.0.0.0 0.0.0.0 15.49.154.1
+ip route 0.0.0.0 0.0.0.0 174.2.164.2 254
+router ospf 1
+network 3.144.167.1 0.0.0.0 area 0
+network 83.78.26.1 0.0.0.0 area 0
+network 89.41.183.1 0.0.0.0 area 0
+network 174.2.164.1 0.0.0.0 area 0
+network 20.98.145.1 0.0.0.0 area 0
+network 155.26.71.9 0.0.0.0 area 0
+default-information originate
+
+Gondor Router 1
+enable secret C1sc0R0cks
+hostname GondorR1
+int g0/0
+ip add 3.144.167.2 255.255.255.252
+no shut
+int g0/1
+ip add 192.168.14.1 255.255.255.192
+no shut
+int g0/2
+ip add 104.101.125.6 255.255.255.252
+no shut
+router ospf 1
+network 3.144.167.2 0.0.0.0 area 0
+network 192.168.14.1 0.0.0.0 area 0
+network 104.101.125.6 0.0.0.0 area 0
+exit
+int g0/0
+ip ospf cost 10
+int g0/2
+ip ospf cost 30
+exit
+ip ssh version 2
+ip domain-name Mordor.com
+crypto key generate rsa general-keys modulus 3632
+username admin secret OneRing
+line vty 0 4
+transport input ssh
+login local
+exit
+line vty 5 15
+shutdown
+
+Mordor Layer 3 Switch 2
+enable secret C1sc0R0cks
+hostname MordorL3S2
+ip routing
+int g1/0/1
+no switchport
+ip address 155.26.71.10 255.255.255.252
+no shut
+int g1/0/2
+no switchport
+ip address 136.174.243.14 255.255.255.252
+no shut
+int g1/0/3
+no switchport
+ip address 9.63.216.18 255.255.255.252
+no shut
+int vlan 1
+ip address 10.115.140.2 255.255.255.0
+no shut
+vlan 100
+int vlan 100
+ip address 10.179.145.2 255.255.255.0
+no shut
+vlan 200
+int vlan 200
+ip address 172.30.253.2 255.255.255.0
+no shut
+int g1/0/4
+switchport mode trunk
+switchport trunk allowed vlan 1,100,200
+exit
+router ospf 1
+network 155.26.71.10 0.0.0.0 area 0
+network 136.174.243.14 0.0.0.0 area 0
+network 9.63.216.18 0.0.0.0 area 0
+network 10.115.140.2 0.0.0.0 area 0
+network 10.179.145.2 0.0.0.0 area 0
+network 172.30.253.2 0.0.0.0 area 0
+exit
+int g1/0/1
+ip ospf cost 10
+int g1/0/2
+ip ospf cost 30
+
+Mordor Switch 1 Config
+enable secret C1sc0R0cks
+hostname MordorS1
+int vlan 1
+ip add 10.115.140.3 255.255.255.0
+no shut
+exit
+ip default-gateway 10.115.140.1
+int fa0/2
+switchport mode access
+switchport access vlan 100
+int fa0/3
+switchport mode access
+switchport access vlan 200
+int range g0/1-2
+switchport mode trunk
+switchport trunk allowed vlan 1,100,200
+int fa0/1
+switchport mode access
+no shut
+
+Numenor Router 1
+hostname NumenorR1
+int g0/0
+ip addr 83.78.26.2 255.255.255.252
+no shut
+int g0/1
+no shut
+int g0/1.1
+encapsulation dot1q 1
+ip addr 172.28.201.1 255.255.255.240
+int g0/1.2
+encapsulation dot1q 2
+ip addr 10.176.175.1 255.255.255.0
+int g0/2
+ip addr 7.249.141.6 255.255.255.252
+exit
+router ospf 1
+network 83.78.26.2 0.0.0.0 area 0
+network 172.28.201.1 0.0.0.0 area 0
+network 10.176.175.1 0.0.0.0 area 0
+network 7.249.141.6 0.0.0.0 area 0
+exit
+int g0/0
+ip ospf cost 10
+int g0/2
+ip ospf cost 30
+exit
+ip ssh version 2
+ip domain-name Mordor.com
+crypto key generate rsa general-keys modulus 3632
+username admin secret OneRing
+line vty 0 4
+transport input ssh
+login local
+line vty 5 15
+shutdown
